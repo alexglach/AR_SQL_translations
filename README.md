@@ -51,4 +51,52 @@ FROM posts
 WHERE EXTRACT(YEAR FROM posts.created_at) < 2014
 
 10.
-FROM users JOIN posts ON users.post
+SELECT DISTINCT users.first_name
+FROM users JOIN (SELECT users.id AS userid, COUNT(*) AS posts
+FROM users JOIN posts ON users.id = posts.authorid
+GROUP BY users.id) as post_count ON users.id = post_count.userid
+WHERE posts >= 3
+
+11. 
+SELECT *
+FROM posts
+WHERE posts.title LIKE 'The%'
+
+12.
+SELECT *
+FROM posts
+WHERE posts.id IN ('3', '5', '7', '9')
+
+
+Custon Translations
+
+1. AR: Airport.where("state_id" > 3).count
+   
+   SQL: 
+   SELECT COUNT(*)
+   FROM airports
+   WHERE state_id > 3
+
+2. All posts by an author whose last name is in second half of alphabet
+
+  AR: Post.joins(:users).where("users.last_name > ?", "M")
+
+  SQL:
+  SELECT *
+  FROM posts JOIN users ON posts.userid = users.id
+  WHERE users.last_name > "M"
+
+
+3. How many posts were written each year
+
+  AR: Post.group("EXTRACT( YEAR created_at ) as year").count
+
+  SQL:
+  SELECT COUNT(*)
+  FROM posts
+  GROUP BY EXTRACT( YEAR created_at ) as year
+
+
+
+
+
